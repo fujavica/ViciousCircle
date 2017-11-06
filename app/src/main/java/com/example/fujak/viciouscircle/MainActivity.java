@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends Activity {
 
     @Override
@@ -13,5 +16,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+       // finish();
     }
 }

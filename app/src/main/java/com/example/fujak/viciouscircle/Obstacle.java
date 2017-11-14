@@ -23,7 +23,6 @@ public class Obstacle {
         posx=x;
         posy=y;
         speed = defaultSpeed;
-
     }
 
     public static ArrayList<Obstacle> iLikeToMoveItMoveIt(ArrayList<Obstacle> obstacles){

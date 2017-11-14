@@ -11,7 +11,7 @@ public class DataManager {
     public static ArrayList<Obstacle> loadLevel(){
         ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 
-        Obstacle o = new Obstacle(500,100, 20, -100);
+        Obstacle o = new Obstacle(500,100, 20, -500);
         obstacles.add(o);
         return obstacles;
     }

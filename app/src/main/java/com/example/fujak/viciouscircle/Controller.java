@@ -22,7 +22,11 @@ public class Controller extends TimerTask {
     @Override
     public void run() {
         screen.moveObstacles();
-        screen.postInvalidate();
+        screen.moveCircles();
+        if (screen.detectCollisions() == false){
+            screen.postInvalidate();
+        }
+
        /* try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Začarovaný Kruh</string>
+    <string name="singlepl">1H</string>
+    <string name="multipl">2H</string>
+    <string name="title_activity_multiplayer">Více hráčů</string>
+
+    <string name="hc_date">Datum</string>
+    <string name="hc_name">Přezdívka</string>
+    <string name="hc_level">Úroveň</string>
+    <string name="hc_loading">Stahuju data..</string>
+    <string name="hc_loadfailed">Data nyní nejsou k dispozici. Skuste později</string>
+    <string name="hc_notconnected">Nejste připojení k internetu</string>
+</resources>

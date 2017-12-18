@@ -33,10 +33,13 @@
         <activity
             android:name=".HighscoreActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.MyTheme"></activity>
+            android:theme="@style/AppTheme.MyTheme" />
         <activity
             android:name=".Multiplayer"
-            android:label="@string/title_activity_multiplayer"></activity>
+            android:label="@string/title_activity_multiplayer" />
+        <activity
+            android:name=".LevelOverview"
+            android:label="@string/title_activity_level_overview"></activity>
     </application>
 
 </manifest>

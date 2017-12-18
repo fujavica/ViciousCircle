@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
@@ -38,7 +39,7 @@ public class HighscoreActivity extends Activity {
 
     private static boolean wifiConnected = false;
     private static boolean mobileConnected = false;
-    private static String URL = "https://drive.google.com/uc?authuser=0&id=1dSx2ObOF_MwEosveFTEEDhaNgYFPzdjg&export=download";
+    private static String URL = "https://api.myjson.com/bins/t3n3n";
     private TextView title;
     private TextView title2;
     private TextView title3;
@@ -51,7 +52,7 @@ public class HighscoreActivity extends Activity {
         title = (TextView) findViewById(R.id.title1);
         title2 = (TextView) findViewById(R.id.title2);
         title3 = (TextView) findViewById(R.id.title3);
-        title.setText("Loading...");
+        title.setText(getResources().getString(R.string.hc_loading));
         updateConnectedFlags();
         loadPage();
     }
@@ -77,7 +78,7 @@ public class HighscoreActivity extends Activity {
             // AsyncTask subclass
             new DownloadHighscores(this).execute(URL);
         } else {
-            title.setText("You are not connected to Internet");
+            title.setText(getResources().getString(R.string.hc_notconnected));
         }
     }
 
@@ -104,15 +105,20 @@ public class HighscoreActivity extends Activity {
 
         @Override
         protected void onPostExecute(List<Entry> result) {
+            if(result == null) {
+
+                title.setText(getResources().getString(R.string.hc_loadfailed));
+                return;
+            }
             HighscoreActivity ref = (HighscoreActivity) context; //
 
             // Displays the HTML string in the UI via a WebView
 
             Log.d("Result","length = " + result.size());
 
-            title.setText("Name");
-            title2.setText("Level");
-            title3.setText("Date");
+            title.setText(getResources().getString(R.string.hc_name));
+            title2.setText(getResources().getString(R.string.hc_level));
+            title3.setText(getResources().getString(R.string.hc_date));
             HCAdapter adapter = new HCAdapter(context,
                     R.layout.score, result);
             ListView lv = (ListView)findViewById(R.id.listView1);
@@ -133,13 +139,11 @@ public class HighscoreActivity extends Activity {
         try {
             stream = downloadUrl(urlString);
             entries = parser.parse(stream);
-            // Makes sure that the InputStream is closed after the app is
-            // finished using it.
         }
         catch (Exception e) {
-            title.setText("Data is unavailable");
+
         }
-            finally
+        finally
          {
             if (stream != null) {
                 stream.close();
@@ -152,6 +156,7 @@ public class HighscoreActivity extends Activity {
     private InputStream downloadUrl(String urlString) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        System.setProperty("http.keepAlive", "false");
         conn.setReadTimeout(10000 /* milliseconds */);
         conn.setConnectTimeout(15000 /* milliseconds */);
         conn.setRequestMethod("GET");

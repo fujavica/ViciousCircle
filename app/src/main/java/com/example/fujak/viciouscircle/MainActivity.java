@@ -2,6 +2,9 @@ package com.example.fujak.viciouscircle;
 
 import android.app.Activity;
 import android.app.LauncherActivity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -34,15 +38,25 @@ public class MainActivity extends Activity {
     BluetoothAdapter blueAdapter;
     BluetoothChatService bs;
     ArrayAdapter<String> pairedDevicesArrayAdapter;
-
+    public int chosenLevel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        Bundle extras = getIntent().getExtras();
+        chosenLevel = extras.getInt("level",1);
+
         setContentView(R.layout.activity_main);
 
     }
 
+    public void levelCompleted(){
 
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }
 
 

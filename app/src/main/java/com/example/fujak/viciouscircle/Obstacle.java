@@ -1,12 +1,13 @@
 package com.example.fujak.viciouscircle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Fujak on 11/6/2017.
  */
 
-public class Obstacle {
+public class Obstacle implements Serializable{
     public int width;
     public int height;
     public int speed;
@@ -21,7 +22,7 @@ public class Obstacle {
 
  //   public static final double speedCoeficient = 0.005 ;  //           =   0.005% of screen height per frame
 
-    public Obstacle(int w, int h, int x, int y){
+    public Obstacle(int w, int h, int x, int y) {
 
         posx=x;
         posy=y;

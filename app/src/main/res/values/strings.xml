@@ -1,4 +1,14 @@
 <resources>
-    <string name="app_name">ViciousCircle</string>
+    <string name="app_name">Vicious Circle</string>
+    <string name="singlepl">1P</string>
+    <string name="multipl">2P</string>
     <string name="title_activity_multiplayer">Multiplayer</string>
+
+    <string name="hc_date">Date</string>
+    <string name="hc_name">Nickname</string>
+    <string name="hc_level">Level</string>
+    <string name="hc_loading">Loading data..</string>
+    <string name="hc_loadfailed">Data are unavailable right now</string>
+    <string name="hc_notconnected">You are not connected to the internet</string>
+    <string name="title_activity_level_overview">LevelOverview</string>
 </resources>

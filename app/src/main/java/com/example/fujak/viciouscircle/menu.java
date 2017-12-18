@@ -14,9 +14,9 @@ public class menu extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        int resID = getResources().getIdentifier("intro","raw",getPackageName());//
-        mediaPlayer = MediaPlayer.create(this, resID);//
-        mediaPlayer.start();//
+        int resID = getResources().getIdentifier("intro","raw",getPackageName());
+        mediaPlayer = MediaPlayer.create(this, resID);
+        //mediaPlayer.start();
         LinearLayout btn_single = (LinearLayout) findViewById(R.id.singleplayer);
         btn_single.setOnClickListener(this);
         LinearLayout btn_multi = (LinearLayout) findViewById(R.id.multiplayer);
@@ -34,7 +34,7 @@ public class menu extends Activity implements View.OnClickListener{
 
             case R.id.singleplayer:
             {
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(this, LevelOverview.class);
                 //startActivityForResult(intent,i);
                 startActivity(intent);
                 break;

@@ -62,20 +62,25 @@ public class GameView extends View {
     Rotation rotation = Rotation.STATIONARY;
 
     MediaPlayer mediaPlayer;
+    MediaPlayer mediaPlayer2;
     boolean paused = false;
     int level = 1;
+    int songID;
 
     public GameView(Context context) {
         super(context);
+        level = ((MainActivity) context).chosenLevel;
+        songID = context.getResources().getIdentifier("level"  + level + "music","raw",context.getPackageName());
+        mediaPlayer = MediaPlayer.create(context, songID);
         init(context);
-        // this.setOnTouchListener(this);
     }
 
 
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        int resID = context.getResources().getIdentifier("level" + level,"raw",context.getPackageName());
-        mediaPlayer = MediaPlayer.create(context, resID);
+        level = ((MainActivity) context).chosenLevel;
+        songID = context.getResources().getIdentifier("level"  + level + "music","raw",context.getPackageName());
+        mediaPlayer = MediaPlayer.create(context, songID);
         init(context);
     }
 
@@ -113,7 +118,7 @@ public class GameView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         Log.d("Size change","Size changed: from " + oldw + " " + oldh + " to " + w + " " + h);
         if(obstacles == null)
-        obstacles = DataManager.loadLevel(w, h);
+        obstacles = DataManager.loadLevel(this.getContext(), 1,w, h);
         else obstacles = Obstacle.adjustSize(obstacles, w, h);
 
         width = w;
@@ -126,8 +131,9 @@ public class GameView extends View {
         circle2_x = circleCenter_x + bigRadius;
         circle_y = circleCenter_y;
         circle2_y = circleCenter_y;
-        //super.onSizeChanged(w, h, oldw, oldh);
+
         this.invalidate();
+        super.onSizeChanged(w, h, oldw, oldh);
 
     }
 
@@ -271,13 +277,11 @@ public class GameView extends View {
     if(obstacles == null) return false;
         for(Obstacle o : obstacles)
         {
-            //if(o.posy + o.height < circle_y - smallRadius && o.posy >  circle_y + smallRadius)
-
             upper_difference = circle_y - smallRadius  - o.posy;
-            if(upper_difference <  o.height && upper_difference > - (smallRadius*2)) // Y match?
+            if(upper_difference + 10<  o.height && upper_difference > - (smallRadius*2)) // Y match?
             {
              left_difference = circle_x - smallRadius - o.posx;
-                if(left_difference <  o.width && left_difference > - (smallRadius*2)) // X match?
+                if(left_difference <  o.width && left_difference > - (smallRadius*2)) // X match too?
                 {
                     gameOver(); //Collision with circle 1
                     return true;
@@ -285,7 +289,7 @@ public class GameView extends View {
 
             }
             upper_difference = circle2_y - smallRadius  - o.posy;
-            if(upper_difference <  o.height && upper_difference > - (smallRadius*2)) // Y match?
+            if(upper_difference + 10<  o.height && upper_difference > - (smallRadius*2)) // Y match?
             {
                 left_difference = circle2_x - smallRadius - o.posx;
                 if(left_difference <  o.width && left_difference > - (smallRadius*2)) // X match too?
@@ -300,27 +304,51 @@ public class GameView extends View {
         return false;
     }
 
+    public void levelCompleted()
+    {
+        if(obstacles == null) return;
+
+        for(Obstacle o : obstacles)
+        {
+            if(o.posy < height) return;
+        }
+        end();
+        ((MainActivity)context).levelCompleted();
+    }
     public void gameOver()
     {
-      //  timer.cancel();
         mediaPlayer.release();
-        mediaPlayer = MediaPlayer.create(context, R.raw.gameover);
+        mediaPlayer = MediaPlayer.create(context, R.raw.gameover2);
+        mediaPlayer.setLooping(false);
         mediaPlayer.start();
-        end();
 
+        Thread pause = new breakThread(this);
+        pause.start();
     }
 
+    public void restartLevel(){
+        if(mediaPlayer == null) return;
+        mediaPlayer.release();
+        mediaPlayer = MediaPlayer.create(context, songID);
+        mediaPlayer.start();
+        obstacles = DataManager.loadLevel(this.getContext(), 1,width, height);
+        t = new ControlThread(this, syncToken);
+        t.start();
+    }
     public void end()
     {
-       // mediaPlayer.release();
-       // mediaPlayer = null;
+        if(mediaPlayer != null) mediaPlayer.release();
+        mediaPlayer = null;
+        t.interrupt();
     }
+
 
     @Override
     public void onDetachedFromWindow() {
-        mediaPlayer.release();
+
+       if(mediaPlayer != null) mediaPlayer.release();
         mediaPlayer = null;
-       // timer.cancel();
+        t.interrupt();
         super.onDetachedFromWindow();
     }
 
@@ -329,10 +357,12 @@ public class GameView extends View {
         if (visibility == View.VISIBLE){
             if(paused){
                 mediaPlayer.start();
+                this.setWillNotDraw(false);
             }
         }
         else
         {
+            this.setWillNotDraw(true);
             mediaPlayer.pause();
             paused = true;
         }

@@ -34,7 +34,6 @@ public class GameView extends View {
     private int width;
     private int height;
     Context context;
-    int tickRate = 10;
     Paint obstaclePaint;
     Paint bigCirclePaint;
     Paint smallCirclePaint;
@@ -50,13 +49,16 @@ public class GameView extends View {
     float circle_x;
     float circle_y;
 
+    ControlThread t;
+    Object syncToken;
     float circle2_x;
     float circle2_y;
-
-    double angularVelocity = 0.04;
+    double angularVelocity = 0.08;
     double upper_difference;
     double left_difference;
 
+    int lastTouch = -1;
+    int backupTouch = -1;
     Rotation rotation = Rotation.STATIONARY;
 
     MediaPlayer mediaPlayer;
@@ -84,8 +86,6 @@ public class GameView extends View {
 
     void init(Context context) {
         this.context = context;
-        obstacles = DataManager.loadLevel();
-
         circle = new Circle(200);
         obstaclePaint = new Paint();
         obstaclePaint.setColor(Color.rgb(255, 255, 255));
@@ -101,14 +101,20 @@ public class GameView extends View {
 
         mediaPlayer.start();
 
-        timer = new Timer();
-        timer.schedule(new Controller(this), tickRate, tickRate);
+        syncToken = new Object();
+        t = new ControlThread(this, syncToken);
+        t.start();
+       // timer = new Timer();
+       // timer.scheduleAtFixedRate(new Controller(this), 1000, tickRate);
 
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         Log.d("Size change","Size changed: from " + oldw + " " + oldh + " to " + w + " " + h);
+        if(obstacles == null)
+        obstacles = DataManager.loadLevel(w, h);
+        else obstacles = Obstacle.adjustSize(obstacles, w, h);
 
         width = w;
         height = h;
@@ -120,50 +126,122 @@ public class GameView extends View {
         circle2_x = circleCenter_x + bigRadius;
         circle_y = circleCenter_y;
         circle2_y = circleCenter_y;
-        super.onSizeChanged(w, h, oldw, oldh);
+        //super.onSizeChanged(w, h, oldw, oldh);
         this.invalidate();
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-
+      //  long time= System.currentTimeMillis();
+      //  Log.d("time",Long.toString(time));
         canvas.drawCircle(circleCenter_x, circleCenter_y , bigRadius ,bigCirclePaint);
         canvas.drawCircle(circle_x  , circle_y, smallRadius,smallCirclePaint);
         canvas.drawCircle(circle2_x  , circle2_y, smallRadius,smallCirclePaint);
 
+        if(obstacles == null) return;
         for (Obstacle o : obstacles) {
             canvas.drawRect(o.posx, o.posy, o.posx + o.width, o.posy+ o.height,obstaclePaint);
         }
+        synchronized(syncToken)
+        {
+            syncToken.notify();
+        }
+
+       // long time2= System.currentTimeMillis();
+      //  Log.d("timeFin",Long.toString(time2));
     }
 
 
 
-    public boolean onTouchEvent(MotionEvent event) {
-    if (event.getAction() != MotionEvent.ACTION_DOWN && event.getAction() != MotionEvent.ACTION_UP) return true;
-
-        //Activity host = (Activity) this.getContext();
-        //TextView text = (TextView) host.findViewById(R.id.text);
-        // text.setText("Congratz!");
-
-    if(event.getAction() == MotionEvent.ACTION_UP)
+    public boolean onTouchEvent(MotionEvent event)
     {
-        rotation = Rotation.STATIONARY;
+
+        if(event.getActionMasked() == MotionEvent.ACTION_UP)
+            {
+                if (backupTouch == event.getPointerId(event.getActionIndex()))
+                {
+                    backupTouch = -1;
+                    return true;
+                }
+                if (lastTouch == event.getPointerId(event.getActionIndex()) && backupTouch == -1)
+                {
+                    lastTouch = -1;
+                    rotation = Rotation.STATIONARY;
+                    return true;
+                }
+                if (backupTouch != -1){
+                    double x = event.getX(event.findPointerIndex(backupTouch));
+                    if (x > width / 2)
+                        rotation = Rotation.CLOCKWISE;
+                    else
+                        rotation = Rotation.COUNTERCLOCKWISE;
+
+                    lastTouch = backupTouch;
+                    backupTouch = -1;
+                    return true;
+                }
+                return true;
+            }
+        else if(event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)
+        {
+            if (backupTouch == event.getPointerId(event.getActionIndex()))
+            {
+                backupTouch = -1;
+                return true;
+            }
+            if (lastTouch == event.getPointerId(event.getActionIndex()) && backupTouch == -1)
+            {
+                lastTouch = -1;
+                rotation = Rotation.STATIONARY;
+                return true;
+            }
+            if (backupTouch != -1){
+                double x = event.getX(event.findPointerIndex(backupTouch));
+                if (x > width / 2)
+                    rotation = Rotation.CLOCKWISE;
+                else
+                    rotation = Rotation.COUNTERCLOCKWISE;
+
+                lastTouch = backupTouch;
+                backupTouch = -1;
+                return true;
+            }
+        return true;
+        }
+        else if(event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN)
+        {
+            if(lastTouch !=-1) backupTouch = lastTouch;
+
+            lastTouch = event.getPointerId(event.getActionIndex());
+            double x = event.getX(event.findPointerIndex(lastTouch));
+            if (x > width / 2)
+                rotation = Rotation.CLOCKWISE;
+            else
+                rotation = Rotation.COUNTERCLOCKWISE;
+            return true;
+        }
+
+        else if(event.getActionMasked() == MotionEvent.ACTION_DOWN)
+        {
+            if(lastTouch !=-1) backupTouch = lastTouch;
+
+            lastTouch = event.getPointerId(event.getActionIndex());
+            double x = event.getX(event.findPointerIndex(lastTouch));
+            if (x > width / 2)
+                rotation = Rotation.CLOCKWISE;
+            else
+                rotation = Rotation.COUNTERCLOCKWISE;
+            return true;
+        }
+
         return true;
     }
 
-        double x = event.getX();
-        if (x > width / 2)
-            rotation = Rotation.CLOCKWISE;
-        else
-            rotation = Rotation.COUNTERCLOCKWISE;
 
-
-        return true;
-    }
-
-
-    public void moveObstacles(){
-        obstacles = Obstacle.iLikeToMoveItMoveIt(obstacles);
+     public void moveObstacles(){
+        if(obstacles != null)
+            obstacles = Obstacle.iLikeToMoveItMoveIt(obstacles);
     }
 
     public void moveCircles()
@@ -190,7 +268,7 @@ public class GameView extends View {
 
     public boolean detectCollisions()
     {
-
+    if(obstacles == null) return false;
         for(Obstacle o : obstacles)
         {
             //if(o.posy + o.height < circle_y - smallRadius && o.posy >  circle_y + smallRadius)
@@ -202,6 +280,7 @@ public class GameView extends View {
                 if(left_difference <  o.width && left_difference > - (smallRadius*2)) // X match?
                 {
                     gameOver(); //Collision with circle 1
+                    return true;
                 }
 
             }
@@ -212,6 +291,7 @@ public class GameView extends View {
                 if(left_difference <  o.width && left_difference > - (smallRadius*2)) // X match too?
                 {
                     gameOver(); //Collision with circle 2
+                    return true;
                 }
 
             }
@@ -222,7 +302,7 @@ public class GameView extends View {
 
     public void gameOver()
     {
-        timer.cancel();
+      //  timer.cancel();
         mediaPlayer.release();
         mediaPlayer = MediaPlayer.create(context, R.raw.gameover);
         mediaPlayer.start();
@@ -240,7 +320,7 @@ public class GameView extends View {
     public void onDetachedFromWindow() {
         mediaPlayer.release();
         mediaPlayer = null;
-        timer.cancel();
+       // timer.cancel();
         super.onDetachedFromWindow();
     }
 
@@ -248,15 +328,12 @@ public class GameView extends View {
     protected void onVisibilityChanged(@NonNull View changedView, int visibility){
         if (visibility == View.VISIBLE){
             if(paused){
-                timer = new Timer();
-                timer.schedule(new Controller(this), tickRate, tickRate);
                 mediaPlayer.start();
             }
         }
         else
         {
             mediaPlayer.pause();
-            timer.cancel();
             paused = true;
         }
     }

@@ -1,5 +1,7 @@
 package com.example.fujak.viciouscircle;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -8,11 +10,13 @@ import java.util.ArrayList;
 
 public class DataManager {
 
-    public static ArrayList<Obstacle> loadLevel(){
+    public static ArrayList<Obstacle> loadLevel(int w, int h){
         ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 
-        Obstacle o = new Obstacle(500,100, 20, -500);
+        int obstacle_width = (int) ((w *0.40) + 0.5);
+        Obstacle o = new Obstacle(obstacle_width,100, 20, -500);
         obstacles.add(o);
         return obstacles;
+
     }
 }

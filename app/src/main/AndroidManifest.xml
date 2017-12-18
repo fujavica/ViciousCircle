@@ -2,8 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.fujak.viciouscircle">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -12,7 +19,7 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.MyTheme"></activity>
+            android:theme="@style/AppTheme.MyTheme" />
         <activity
             android:name=".menu"
             android:configChanges="orientation|screenSize"
@@ -23,10 +30,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HighscoreActivity"
+        <activity
+            android:name=".HighscoreActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.MyTheme">
-        </activity>
+            android:theme="@style/AppTheme.MyTheme"></activity>
+        <activity
+            android:name=".Multiplayer"
+            android:label="@string/title_activity_multiplayer"></activity>
     </application>
 
 </manifest>

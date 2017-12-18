@@ -3,6 +3,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 
 import java.util.Timer;
@@ -21,12 +22,18 @@ public class Controller extends TimerTask {
 
     @Override
     public void run() {
+        //  long time= System.currentTimeMillis();
+       //  Log.d("time",Long.toString(time));
+
+
         screen.moveObstacles();
         screen.moveCircles();
         if (screen.detectCollisions() == false){
-            screen.postInvalidate();
-        }
+            screen.postInvalidateOnAnimation();
 
+           // long time2= System.currentTimeMillis();
+           // Log.d("timeFin",Long.toString(time2));
+        }
        /* try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {

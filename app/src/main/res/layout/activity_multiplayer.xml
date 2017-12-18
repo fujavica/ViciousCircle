@@ -33,7 +33,7 @@
             android:textColor="@android:color/white"
             android:textSize="25sp"
             android:textAlignment="center"
-           />
+            />
 
         <TextView
             android:id="@+id/title3"
@@ -42,7 +42,7 @@
             android:layout_weight="1"
             android:textColor="@android:color/white"
             android:textSize="25sp"
-           />
+            />
     </LinearLayout>
 
     <ListView

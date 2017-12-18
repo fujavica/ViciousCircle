@@ -11,24 +11,37 @@ public class Obstacle {
     public int height;
     public int speed;
     public int posx;
-    public int posy;
+    public int  posy;
     public boolean rotation = false;
     public boolean vanish = false;
 
-    public final int defaultSpeed = 5;
+    public static int defaultSpeed = 11;
+    public static int screenHeight;
+    public static int screenWidth;
+
+ //   public static final double speedCoeficient = 0.005 ;  //           =   0.005% of screen height per frame
 
     public Obstacle(int w, int h, int x, int y){
-        width = w;
-        height = h;
+
         posx=x;
         posy=y;
+        width=w;
+        height=h;
         speed = defaultSpeed;
     }
 
-    public static ArrayList<Obstacle> iLikeToMoveItMoveIt(ArrayList<Obstacle> obstacles){
+    public  static ArrayList<Obstacle> iLikeToMoveItMoveIt(ArrayList<Obstacle> obstacles){
+
+
+
         for(Obstacle o : obstacles){
-            o.posy+= o.speed;
+            o.posy+= o.speed ;
         }
+    return obstacles;
+    }
+
+    public static ArrayList<Obstacle> adjustSize(ArrayList<Obstacle> obstacles, int w, int h)
+    {
     return obstacles;
     }
 }

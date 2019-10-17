@@ -1,5 +1,5 @@
 # ViciousCircle
-Author: Dominik Raška - RAS0084
+Author: ***
 
 V této 2D arkádě hráč otáčí kruhem na kterém jsou připnuté korále aby se vyhnul přilítajícím překážkám. 
 Jednou s možností bude mod pro dva hráče. Aplikace bude mimo jiné využívat běh ve více vláknech, persistent storage, 

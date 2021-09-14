@@ -3,7 +3,7 @@
 Vicious circle is a 2D arcade game where the player controls a ring with 2 pearls attached to it while avoiding various obstacles.
 The game is designed to reinforce the reflexes of the players as well as visual and motor memory.
 
-The game is currently in in alpha version.
+The game is currently in alpha version.
 
 | Menu  | Gameplay | Progression design|
 | ------------- | ------------- |------------- |
